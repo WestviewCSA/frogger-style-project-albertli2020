@@ -11,14 +11,18 @@ public class Bloons extends Sprite{
     private static File[] bloonsFiles = directory.listFiles();
     private ArrayList<BufferedImage> bloonSprites = new ArrayList<>();
 
-    private int rbe = 5;
+    private int rbe = 1;
 
-	public Bloons(int x, int y, int vx, int vy, int rbe) {
-        super(x, y, vx, vy, 0, 0); // temp width/height
+	public Bloons(int x, int y, int rbe) {
+        super(x, y, 0, 0, 0, 0); // temp width/height
         this.rbe = rbe;
         loadSprites();
         setSpriteByRBE();
     }
+
+	public Bloons(){
+		super(0, 0, 0, 0, 0, 0);
+	}
 
 	//load sprites
     private void loadSprites() {

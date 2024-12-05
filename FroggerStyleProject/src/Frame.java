@@ -1,9 +1,9 @@
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Image;
-import java.awt.MouseInfo;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -12,7 +12,11 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URL;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -22,22 +26,29 @@ public class Frame extends JPanel implements ActionListener, MouseListener, KeyL
 	public static boolean debugging = true;
 	public static boolean simpleMovement = true;
 	//Timer related variables
+	BufferedImage background;
 	long ellapseTime = 0;
 	Font timeFont = new Font("Courier", Font.BOLD, 70);
 	Font myFont = new Font("Courier", Font.BOLD, 40);
 	
-	Monkey dart = new Monkey();
-
-	int width = 600;
-	int height = 600;	
+	Monkey dart = new Monkey(275, 570);
+	Rideable ride1 = new Rideable(400, 400);
+	int width = 610;
+	int height = 630;	
 	
 
 	public void paint(Graphics g) {
 		super.paintComponent(g);
+
+		if (background != null) {
+            g.drawImage(background, 0, 0, 610, 630, null);
+        }
+		ride1.paint(g);
+
 		dart.rotate(getAngle(dart.x, dart.y));
 		dart.paint(g);
 		System.out.println(MouseInfo.getPointerInfo().getLocation());
-		System.out.println(getAngle(dart.x, dart.y));
+		System.out.println(dart.x + "," + dart.y);
 
 		if(debugging){
 			g.setColor(Color.RED);
@@ -56,6 +67,14 @@ public class Frame extends JPanel implements ActionListener, MouseListener, KeyL
 	}
 	
 	public Frame() {
+		try{
+            URL imageURL = getClass().getResource("/imgs/bgstart.png");
+            background = ImageIO.read(imageURL);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
 		JFrame f = new JFrame("Blooner");
 		f.setSize(new Dimension(width, height));
 		f.setBackground(Color.white);
@@ -176,7 +195,6 @@ public class Frame extends JPanel implements ActionListener, MouseListener, KeyL
 			dart.updateX(0);
 			dart.updateY(0);
 		}
-	
 	}
 
 	@Override
