@@ -1,84 +1,106 @@
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Toolkit;
 import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 import java.net.URL;
 
+
 public class Sprite{
-	private Image forward, backward, left, right; 	
-	private AffineTransform tx;
-	
+	protected BufferedImage sprite; 	
+	protected AffineTransform tx;
 	int dir = 0; 					//0-forward, 1-backward, 2-left, 3-right
 	int width, height;
 	int x, y;						//position of the object
 	int vx, vy;						//movement variables
-	double scaleWidth = 1.0;		//change to scale image
-	double scaleHeight = 1.0; 		//change to scale image
+	double scaleWidth = 2.0;		//change to scale image
+	double scaleHeight = 2.0; 		//change to scale image
 
-	public Sprite() {
-		forward 	= getImage("/imgs/"+"forwardFile.png"); //load the image for Tree
-		backward 	= getImage("/imgs/"+"backward.png"); //load the image for Tree
-		left 		= getImage("/imgs/"+"left.png"); //load the image for Tree
-		right 		= getImage("/imgs/"+"right.png"); //load the image for Tree
-
-		//alter these
-		width = 0;
-		height = 0;
-		x = 0;
-		y = 0;
-		vx = 0;
-		vy = 0;
+	public Sprite(int x, int y, int vx, int vy, int width, int height) {
+		//Initialize variables
+		this.width = (int) (width * scaleWidth);
+		this.height = (int) (height * scaleHeight);
+		this.x = x;
+		this.y = y;
+		this.vx = vx;
+		this.vy = vy;
 		
 		tx = AffineTransform.getTranslateInstance(0, 0);
 		
-		init(x, y); 				//initialize the location of the image
-									//use your variables
-		
+		init(x, y); //Initialize the transform
 	}
 
 	public void paint(Graphics g) {
-		//these are the 2 lines of code needed draw an image on the screen
 		Graphics2D g2 = (Graphics2D) g;
-		
+
+        //update pos
 		x+=vx;
 		y+=vy;	
-		
 		init(x,y);
-		
-		switch(dir) {
-		case 0:
-			g2.drawImage(forward, tx, null);
-			break;
-		case 1:
-			g2.drawImage(backward, tx, null);
 
-			break;
-		case 2:
-			g2.drawImage(left, tx, null);
+        //draw image
+		g2.drawRenderedImage(sprite, tx);
 
-			break;
-		case 3:
-			g2.drawImage(right, tx, null);
-			break;
+        //draw debugging box around sprite
+		if(Frame.debugging){
+			g.setColor(Color.green);
+			g.drawRect(x, y, width, height);
 		}
-
 	}
 	
-	private void init(double a, double b) {
+	public void updateX(int vx){
+		this.vx = vx;
+	}
+	
+	public void updateY(int vy){
+		this.vy = vy;
+	}
+
+    public boolean collision(){
+        return false;
+    }
+    
+    public void move(int x, int y){
+        this.x = x;
+        this.y = y;
+    }
+
+    public void stop(){
+        this.vx = 0;
+        this.vy = 0;
+    }
+
+    protected void init(double a, double b) {
 		tx.setToTranslation(a, b);
 		tx.scale(scaleWidth, scaleHeight);
 	}
 
-	private Image getImage(String path) {
+    protected BufferedImage loadImage(String path) {
+        BufferedImage img = null;
+        try {
+            URL imageURL = Sprite.class.getResource(path);
+            img = ImageIO.read(imageURL); // Load the image as a BufferedImage
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return img;
+    }
+
+
+
+
+    /*
+    private Image getImage(String path) {
 		Image tempImage = null;
 		try {
-			URL imageURL = Sprite.class.getResource(path);
+			URL imageURL = Monkey.class.getResource(path);
 			tempImage = Toolkit.getDefaultToolkit().getImage(imageURL);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return tempImage;
 	}
-
+    */
 }
