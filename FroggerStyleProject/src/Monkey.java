@@ -136,5 +136,5 @@ public class Monkey extends Sprite{
 		int maxY = Arrays.stream(yPoints).max().getAsInt();
 		
 		return new Rectangle(minX, minY, maxX - minX, maxY - minY);
-}
+	}
 }

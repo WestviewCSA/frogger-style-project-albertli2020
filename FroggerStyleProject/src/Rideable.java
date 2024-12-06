@@ -10,7 +10,7 @@ import java.awt.Color;
 
 public class Rideable extends Sprite{
     private static final Random random = new Random();
-    private static final String rideableDir = "FroggerStyleProject/src/imgs/rideables";
+    private static final String rideableDir = "src/imgs/rideables";
     private static File directory = new File(rideableDir);
     private static File[] rideableFiles = directory.listFiles();
     private ArrayList<BufferedImage> rideableSprites = new ArrayList<>();
@@ -21,7 +21,8 @@ public class Rideable extends Sprite{
         this.centerY = centerY; 
         this.scaleWidth = 1.4;
         this.scaleHeight = 1.4;
-        loadSprites();
+        System.out.println(System.getProperty("user.dir"));
+        loadSprites();        
         setType();
     }
 

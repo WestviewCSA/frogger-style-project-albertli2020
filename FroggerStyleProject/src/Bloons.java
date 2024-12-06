@@ -9,7 +9,7 @@ import java.util.Random;
 
 public class Bloons extends Sprite{
 	private static final Random random = new Random();
-	private static final String bloonsDir = "FroggerStyleProject/src/imgs/bloon sprites";
+	private static final String bloonsDir = "src/imgs/bloon sprites";
     private static File directory = new File(bloonsDir);
     private static File[] bloonsFiles = directory.listFiles();
     private ArrayList<BufferedImage> bloonSprites = new ArrayList<>();
@@ -19,6 +19,8 @@ public class Bloons extends Sprite{
 	public Bloons(int x, int y) {
         super(x, y, 0, 0, 0, 0); // temp width/height
         rbe = random.nextInt(11) + 1;
+        System.out.println(directory);
+        System.out.println(System.getProperty("user.dir"));
         loadSprites();
         setSpriteByRBE();
     }

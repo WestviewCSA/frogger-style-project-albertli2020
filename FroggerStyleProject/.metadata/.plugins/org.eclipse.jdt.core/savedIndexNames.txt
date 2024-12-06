@@ -1,0 +1,1 @@
+INDEX VERSION 1.134+/Users/Albert/Documents/GitHub/frogger-style-project-albertli2020/FroggerStyleProject/.metadata/.plugins/org.eclipse.jdt.core

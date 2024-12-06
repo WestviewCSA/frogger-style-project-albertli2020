@@ -29,7 +29,8 @@ public class Frame extends JPanel implements ActionListener, MouseListener, KeyL
 	public static boolean debugging = true;
 	public static boolean simpleMovement = true;
 	//Timer related variables
-	BufferedImage background;
+	BufferedImage background1;
+	BufferedImage background2;
 	long ellapseTime = 0;
 	Font timeFont = new Font("Courier", Font.BOLD, 70);
 	Font myFont = new Font("Courier", Font.BOLD, 40);
@@ -53,6 +54,7 @@ public class Frame extends JPanel implements ActionListener, MouseListener, KeyL
 	ArrayList<Lives> lives = new ArrayList<>();
 	int bloonSpeed = 2;
 	boolean dead = false;
+	boolean gameOver = false;
 	int riding = 0;
 	
 	int width = 610;
@@ -61,49 +63,61 @@ public class Frame extends JPanel implements ActionListener, MouseListener, KeyL
 
 	public void paint(Graphics g) {
 		super.paintComponent(g);
-
-		if (background != null) {
-            g.drawImage(background, 0, 0, 610, 630, null);
-        }
-
-		updateBloons(g);
-		updateRideables(g);
-
-		if(dead){
-			lifeCounter --;
-			dart.move(275, 570);
-			dart.stop();
-			dead = false;
-			riding = 0;
-			dart.setRiding(false);
+		if(gameOver){
+			g.drawImage(background2, 0, 0, null);
 		}
-		
-		if(riding > 0){
-			System.out.println(dart.getRiding() + "," + riding);
-			dart.lockTo(rideables[riding / 10 - 1][riding % 10]);
-			if(dart.getRiding() == false){
-				riding = 0;
+		else{ 
+			if (background1 != null) {
+				g.drawImage(background1, 0, 0, 610, 630, null);
 			}
-		}
 
-		for(int i = 0; i < lifeCounter; i++){
-			lives.get(i).paint(g);
-		}
+			updateBloons(g);
+			updateRideables(g);
+			System.out.println(dart.x + "," + dart.y);
 
-		dart.rotate(getAngle(dart.x, dart.y));
-		dart.paint(g);
-		//System.out.println(MouseInfo.getPointerInfo().getLocation());
-		//System.out.println(dart.x + "," + dart.y);
+			if(riding == 0){
+				//345 - 420, 57 - 128 
+				if(dart.y + dart.height > 55 && dart.y < 120) dead = true;
+				if(dart.y + dart.height > 345 && dart.y < 410) dead = true;
+			}
 
-		if(debugging){
-			g.setColor(Color.RED);
-			int centerX = dart.x + (int)(dart.width * dart.scaleWidth) / 2;
-			int centerY = dart.y + (int)(dart.height * dart.scaleHeight) / 2;
-			double angle = Math.toRadians(getAngle(dart.x, dart.y) + 90);
-			int lineLength = 50;
-			int lineX = centerX + (int)(Math.cos(angle) * lineLength);
-			int lineY = centerY + (int)(Math.sin(angle) * lineLength);
-			g.drawLine(centerX, centerY, lineX, lineY);
+			if(dead){
+				lifeCounter --;
+				if(lifeCounter == 0) gameOver = true;
+				dart.move(275, 570);
+				dart.stop();
+				dead = false;
+				riding = 0;
+				dart.setRiding(false);
+			}
+			
+			if(riding > 0){
+				System.out.println(dart.getRiding() + "," + riding);
+				dart.lockTo(rideables[riding / 10 - 1][riding % 10]);
+				if(dart.getRiding() == false){
+					riding = 0;
+				}
+			}
+
+			for(int i = 0; i < lifeCounter; i++){
+				lives.get(i).paint(g);
+			}
+
+			dart.rotate(getAngle(dart.x, dart.y));
+			dart.paint(g);
+			//System.out.println(MouseInfo.getPointerInfo().getLocation());
+			//System.out.println(dart.x + "," + dart.y);
+
+			if(debugging){
+				g.setColor(Color.RED);
+				int centerX = dart.x + (int)(dart.width * dart.scaleWidth) / 2;
+				int centerY = dart.y + (int)(dart.height * dart.scaleHeight) / 2;
+				double angle = Math.toRadians(getAngle(dart.x, dart.y) + 90);
+				int lineLength = 50;
+				int lineX = centerX + (int)(Math.cos(angle) * lineLength);
+				int lineY = centerY + (int)(Math.sin(angle) * lineLength);
+				g.drawLine(centerX, centerY, lineX, lineY);
+			}
 		}
 	}
 	
@@ -114,7 +128,9 @@ public class Frame extends JPanel implements ActionListener, MouseListener, KeyL
 	public Frame() {
 		try{
             URL imageURL = getClass().getResource("/imgs/bgstart.png");
-            background = ImageIO.read(imageURL);
+            background1 = ImageIO.read(imageURL);
+			imageURL = getClass().getResource("/imgs/bgdefeat.png");
+			background2 = ImageIO.read(imageURL);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -133,7 +149,7 @@ public class Frame extends JPanel implements ActionListener, MouseListener, KeyL
 		f.addKeyListener(this);
 			
 		setCursor(Toolkit.getDefaultToolkit().createCustomCursor(
-				new ImageIcon("FroggerStyleProject/dart.png").getImage().getScaledInstance(10, 22, Image.SCALE_DEFAULT),
+				new ImageIcon("dart.png").getImage().getScaledInstance(10, 22, Image.SCALE_DEFAULT),
 				new Point(0,0),"custom cursor"));	
 		
 		Timer t = new Timer(16, this);
@@ -263,7 +279,7 @@ public class Frame extends JPanel implements ActionListener, MouseListener, KeyL
 			bloons4[i] = new Bloons(15 + i * 125, 225);
 			bloons4[i].updateX(-bloonSpeed);
 			bloons5[i] = new Bloons(20 + i * 125, 165);
-			bloons5[i].updateX(bloonSpeed);
+			bloons5[i].updateX(bloonSpeed * 1);
 		}
 		bloons[0] = bloons1;
 		bloons[1] = bloons2;
