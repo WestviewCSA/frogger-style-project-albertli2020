@@ -1,6 +1,7 @@
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -88,6 +89,10 @@ public class Sprite{
         return img;
     }
 
+    public boolean collision(Rectangle r){
+        Rectangle hitbox = new Rectangle(x, y, width, height);
+        return hitbox.intersects(r);
+    }
 
 
 

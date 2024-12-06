@@ -5,6 +5,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+
 public class Bloons extends Sprite{
 	private static final String bloonsDir = "FroggerStyleProject/src/imgs/bloon sprites";
     private static File directory = new File(bloonsDir);
@@ -25,15 +26,20 @@ public class Bloons extends Sprite{
 	}
 
 	//load sprites
-    private void loadSprites() {
-        if (bloonsFiles != null) {
-            String[] fileNames = new String[bloonsFiles.length];
-            for (int i = 0; i < bloonsFiles.length; i++) {
-                fileNames[i] = bloonsFiles[i].getName();
-            }
-            Arrays.sort(fileNames);
-            for (String fileName : fileNames) {
-                bloonSprites.add(loadImage(bloonsDir + fileName));
+	private void loadSprites() {            
+        if (bloonsFiles != null) {        
+			Arrays.sort(bloonsFiles);        
+            for (File file : bloonsFiles) {
+                if (file.isFile()) {
+                    String relativePath = "/imgs/bloon sprites/" + file.getName();  
+					System.out.println(relativePath);                      
+                    BufferedImage img = loadImage(relativePath);
+                    if (img != null) {
+                        bloonSprites.add(img);
+                    } else {
+                        System.out.println("Failed to load image: " + relativePath);
+                    }
+                }
             }
         } else {
             System.out.println("Directory not found: " + bloonsDir);
@@ -54,7 +60,8 @@ public class Bloons extends Sprite{
     public void paint(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
         setSpriteByRBE(); //update sprite based on rbe
-		
+		if(x > 1250) x = -20;
+		else if(x + width < 0) x = 1250;
 		super.paint(g);
 	}
 
