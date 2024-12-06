@@ -4,9 +4,11 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 
 
 public class Bloons extends Sprite{
+	private static final Random random = new Random();
 	private static final String bloonsDir = "FroggerStyleProject/src/imgs/bloon sprites";
     private static File directory = new File(bloonsDir);
     private static File[] bloonsFiles = directory.listFiles();
@@ -14,9 +16,9 @@ public class Bloons extends Sprite{
 
     private int rbe = 1;
 
-	public Bloons(int x, int y, int rbe) {
+	public Bloons(int x, int y) {
         super(x, y, 0, 0, 0, 0); // temp width/height
-        this.rbe = rbe;
+        rbe = random.nextInt(11) + 1;
         loadSprites();
         setSpriteByRBE();
     }
@@ -60,8 +62,14 @@ public class Bloons extends Sprite{
     public void paint(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
         setSpriteByRBE(); //update sprite based on rbe
-		if(x > 1250) x = -20;
-		else if(x + width < 0) x = 1250;
+		if(x > 1250){
+			x = -30;
+			rbe = random.nextInt(11) + 1;
+		}
+		else if(x + width < 0){
+			x = 1250;
+			rbe = random.nextInt(11) + 1;
+		}
 		super.paint(g);
 	}
 

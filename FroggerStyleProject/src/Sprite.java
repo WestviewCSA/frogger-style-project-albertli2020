@@ -58,11 +58,7 @@ public class Sprite{
 	public void updateY(int vy){
 		this.vy = vy;
 	}
-
-    public boolean collision(){
-        return false;
-    }
-    
+        
     public void move(int x, int y){
         this.x = x;
         this.y = y;
@@ -92,6 +88,10 @@ public class Sprite{
     public boolean collision(Rectangle r){
         Rectangle hitbox = new Rectangle(x, y, width, height);
         return hitbox.intersects(r);
+    }
+
+    public Rectangle hitbox(){
+        return new Rectangle(x, y, width, height);
     }
 
 

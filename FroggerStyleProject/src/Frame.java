@@ -35,12 +35,15 @@ public class Frame extends JPanel implements ActionListener, MouseListener, KeyL
 	Font myFont = new Font("Courier", Font.BOLD, 40);
 	
 	Monkey dart = new Monkey(275, 570);
+	
+	Bloons[][] bloons = new Bloons[5][10];
 	Bloons[] bloons1 = new Bloons[10];
 	Bloons[] bloons2 = new Bloons[10];
 	Bloons[] bloons3 = new Bloons[10];
 	Bloons[] bloons4 = new Bloons[10];
 	Bloons[] bloons5 = new Bloons[10];
 
+	Rideable[][] rideables = new Rideable[4][4];
 	Rideable[] rideables1 = new Rideable[4];
 	Rideable[] rideables2 = new Rideable[4];
 	Rideable[] rideables3 = new Rideable[4];
@@ -49,6 +52,8 @@ public class Frame extends JPanel implements ActionListener, MouseListener, KeyL
 	int lifeCounter = 5;
 	ArrayList<Lives> lives = new ArrayList<>();
 	int bloonSpeed = 2;
+	boolean dead = false;
+	int riding = 0;
 	
 	int width = 610;
 	int height = 630;	
@@ -61,22 +66,25 @@ public class Frame extends JPanel implements ActionListener, MouseListener, KeyL
             g.drawImage(background, 0, 0, 610, 630, null);
         }
 
-		for(int i = 0; i < 10; i++){
-			bloons1[i].paint(g);
-			bloons2[i].paint(g);
-			bloons3[i].paint(g);
-			bloons4[i].paint(g);
-			bloons5[i].paint(g);
-		}
+		updateBloons(g);
+		updateRideables(g);
 
-		
-		for(int i = 0; i < 4; i++){
-			rideables1[i].paint(g);
-			rideables2[i].paint(g);
-			rideables3[i].paint(g);
-			rideables4[i].paint(g);
+		if(dead){
+			lifeCounter --;
+			dart.move(275, 570);
+			dart.stop();
+			dead = false;
+			riding = 0;
+			dart.setRiding(false);
 		}
-	
+		
+		if(riding > 0){
+			System.out.println(dart.getRiding() + "," + riding);
+			dart.lockTo(rideables[riding / 10 - 1][riding % 10]);
+			if(dart.getRiding() == false){
+				riding = 0;
+			}
+		}
 
 		for(int i = 0; i < lifeCounter; i++){
 			lives.get(i).paint(g);
@@ -112,31 +120,10 @@ public class Frame extends JPanel implements ActionListener, MouseListener, KeyL
         }
 
 		for(int i = 1; i <= lifeCounter; i++) lives.add(new Lives(i)); //create life counter
+
+		createBloons();
+		createRideables();
 		
-		for(int i = 0; i < 10; i++){ //create bloons
-			bloons1[i] = new Bloons(10 + i * 125, 510, 1);
-			bloons1[i].updateX(-bloonSpeed);
-			bloons2[i] = new Bloons(2 + i * 125, 455, 3);
-			bloons2[i].updateX(bloonSpeed);
-			bloons3[i] = new Bloons(28 + i * 125, 280, 8);
-			bloons3[i].updateX(bloonSpeed);
-			bloons4[i] = new Bloons(15 + i * 125, 225, 2);
-			bloons4[i].updateX(-bloonSpeed);
-			bloons5[i] = new Bloons(20 + i * 125, 165, 5);
-			bloons5[i].updateX(bloonSpeed);
-		}
-
-		for(int i = 0; i < 4; i++){
-			rideables1[i] = new Rideable(random.nextInt(80) + i * 165, 408);
-			rideables1[i].updateX(2);
-			rideables2[i] = new Rideable(random.nextInt(80) + i * 165, 355);
-			rideables2[i].updateX(-2);
-			rideables3[i] = new Rideable(random.nextInt(80) + i * 165, 117);
-			rideables3[i].updateX(-2);
-			rideables4[i] = new Rideable(random.nextInt(80) + i * 165, 67);
-			rideables4[i].updateX(2);
-		}
-
 		JFrame f = new JFrame("Blooner");
 		f.setSize(new Dimension(width, height));
 		f.setBackground(Color.white);
@@ -253,13 +240,8 @@ public class Frame extends JPanel implements ActionListener, MouseListener, KeyL
 			if(keyCode == 40) dart.updateY(0);
 		}
 		else{
-			if(keyCode == 38 || keyCode == 40) {
-				dart.updateY(0);
-				dart.updateX(0);
-			}
-			else if(keyCode == 37 || keyCode == 39) {
-				dart.updateX(0);
-				dart.updateY(0);
+			if(keyCode >= 37 && keyCode <= 40){
+				dart.stop();
 			}
 		}
 	}
@@ -268,6 +250,70 @@ public class Frame extends JPanel implements ActionListener, MouseListener, KeyL
 	public void keyTyped(KeyEvent arg0) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public void createBloons(){
+		for(int i = 0; i < 10; i++){
+			bloons1[i] = new Bloons(10 + i * 125, 510);
+			bloons1[i].updateX(-bloonSpeed);
+			bloons2[i] = new Bloons(2 + i * 125, 455);
+			bloons2[i].updateX(bloonSpeed);
+			bloons3[i] = new Bloons(28 + i * 125, 280);
+			bloons3[i].updateX(bloonSpeed);
+			bloons4[i] = new Bloons(15 + i * 125, 225);
+			bloons4[i].updateX(-bloonSpeed);
+			bloons5[i] = new Bloons(20 + i * 125, 165);
+			bloons5[i].updateX(bloonSpeed);
+		}
+		bloons[0] = bloons1;
+		bloons[1] = bloons2;
+		bloons[2] = bloons3;
+		bloons[3] = bloons4;
+		bloons[4] = bloons5;
+	}
+
+	public void createRideables(){
+		for(int i = 0; i < 4; i++){
+			rideables1[i] = new Rideable(random.nextInt(80) + i * 165, 408);
+			rideables1[i].updateX(2);
+			rideables2[i] = new Rideable(random.nextInt(80) + i * 165, 355);
+			rideables2[i].updateX(-2);
+			rideables3[i] = new Rideable(random.nextInt(80) + i * 165, 117);
+			rideables3[i].updateX(-2);
+			rideables4[i] = new Rideable(random.nextInt(80) + i * 165, 67);
+			rideables4[i].updateX(2);
+		}
+		rideables[0] = rideables1;
+		rideables[1] = rideables2;
+		rideables[2] = rideables3;
+		rideables[3] = rideables4;
+	}
+
+	public void updateBloons(Graphics g){
+		for(int i = 0; i < 10; i++){
+			for(int j = 0; j < 5; j++){
+				bloons[j][i].paint(g);
+				if(!dead){
+					if(dart.collision(bloons[j][i].hitbox())) dead = true;
+				}
+			}
+		}
+	}
+
+	public void updateRideables(Graphics g){
+		// Reset riding before checking
+		riding = 0;
+		dart.setRiding(false);
+		
+		for(int i = 0; i < 4; i++){
+			for(int j = 0; j < 4; j++){
+				rideables[j][i].paint(g);
+				if(dart.collision(rideables[j][i].hitbox())){
+					dart.setRiding(true);
+					riding = (j + 1) * 10 + i;
+				}
+			}
+		}
 	}
 
 }

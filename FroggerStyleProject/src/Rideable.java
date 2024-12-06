@@ -1,5 +1,6 @@
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
@@ -31,8 +32,14 @@ public class Rideable extends Sprite{
         x+=vx;
 		centerY+=vy;
         
-        if(x > 700) x = -90;
-        else if(x < -90) x = 700;
+        if(x > 700){ 
+            x = -90;
+            setType();
+        }
+        else if(x < -90){
+            x = 700;
+            setType();
+        }
 
 		init(x, centerY - this.height / 2);
 
@@ -56,13 +63,13 @@ public class Rideable extends Sprite{
             this.scaleWidth *= 0.6;
             this.scaleHeight *= 0.6;
         }
-        else if(randomInt == 3){
-            this.scaleWidth *= 0.45;
-            this.scaleHeight *= 0.45;
+        else if(randomInt == 1){
+            this.scaleWidth *= 0.95;
+            this.scaleHeight *= 0.95;
         }
         else{
-            this.scaleWidth *= 0.85;
-            this.scaleHeight *= 0.85;
+            this.scaleWidth *= 0.45;
+            this.scaleHeight *= 0.45;
         }
         this.width = (int) (sprite.getWidth() * scaleWidth); // Assuming scaling factor 1.4
         this.height = (int) (sprite.getHeight() * scaleHeight);
@@ -84,5 +91,10 @@ public class Rideable extends Sprite{
         } else {
             System.out.println("Directory not found: " + rideableDir);
         }
+    }
+
+    @Override
+    public Rectangle hitbox(){
+        return new Rectangle(x, centerY - this.height / 2, width, height);
     }
 }
