@@ -31,6 +31,7 @@ public class Frame extends JPanel implements ActionListener, MouseListener, KeyL
 	//Timer related variables
 	BufferedImage background1;
 	BufferedImage background2;
+	BufferedImage background3;
 	long ellapseTime = 0;
 	Font timeFont = new Font("Courier", Font.BOLD, 70);
 	Font myFont = new Font("Courier", Font.BOLD, 40);
@@ -55,6 +56,7 @@ public class Frame extends JPanel implements ActionListener, MouseListener, KeyL
 	int bloonSpeed = 2;
 	boolean dead = false;
 	boolean gameOver = false;
+	boolean win = false;
 	int riding = 0;
 	
 	int width = 610;
@@ -65,6 +67,9 @@ public class Frame extends JPanel implements ActionListener, MouseListener, KeyL
 		super.paintComponent(g);
 		if(gameOver){
 			g.drawImage(background2, 0, 0, null);
+		}
+		else if(win){
+			g.drawImage(background3, 0, 0, null);
 		}
 		else{ 
 			if (background1 != null) {
@@ -105,6 +110,7 @@ public class Frame extends JPanel implements ActionListener, MouseListener, KeyL
 
 			dart.rotate(getAngle(dart.x, dart.y));
 			dart.paint(g);
+			if(dart.y <= 0) win = true;
 			//System.out.println(MouseInfo.getPointerInfo().getLocation());
 			//System.out.println(dart.x + "," + dart.y);
 
@@ -131,6 +137,8 @@ public class Frame extends JPanel implements ActionListener, MouseListener, KeyL
             background1 = ImageIO.read(imageURL);
 			imageURL = getClass().getResource("/imgs/bgdefeat.png");
 			background2 = ImageIO.read(imageURL);
+			imageURL = getClass().getResource("/imgs/bgvictory.png");
+			background3= ImageIO.read(imageURL);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -244,6 +252,10 @@ public class Frame extends JPanel implements ActionListener, MouseListener, KeyL
 				dart.updateY(-(int)(speed * Math.sin(rotationRadians - Math.PI/2)));
 			}
 		}
+
+		if(keyCode == 82){
+			reset();
+		}
 	}
 
 	@Override
@@ -303,6 +315,15 @@ public class Frame extends JPanel implements ActionListener, MouseListener, KeyL
 		rideables[1] = rideables2;
 		rideables[2] = rideables3;
 		rideables[3] = rideables4;
+	}
+
+	public void reset(){
+		gameOver = false;
+		dead = false;
+		win = false;
+		riding = 0;
+		lifeCounter = 5;
+		dart.move(275, 570);
 	}
 
 	public void updateBloons(Graphics g){
