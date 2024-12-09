@@ -19,8 +19,8 @@ public class Bloons extends Sprite{
 	public Bloons(int x, int y) {
         super(x, y, 0, 0, 0, 0); // temp width/height
         rbe = random.nextInt(11) + 1;
-        System.out.println(directory);
-        System.out.println(System.getProperty("user.dir"));
+        //System.out.println(directory);
+        //System.out.println(System.getProperty("user.dir"));
         loadSprites();
         setSpriteByRBE();
     }
@@ -36,7 +36,7 @@ public class Bloons extends Sprite{
             for (File file : bloonsFiles) {
                 if (file.isFile()) {
                     String relativePath = "/imgs/bloon sprites/" + file.getName();  
-					System.out.println(relativePath);                      
+					//System.out.println(relativePath);                      
                     BufferedImage img = loadImage(relativePath);
                     if (img != null) {
                         bloonSprites.add(img);

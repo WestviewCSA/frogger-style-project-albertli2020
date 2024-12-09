@@ -47,14 +47,13 @@ public class Monkey extends Sprite{
         g2.translate(-(width * scaleWidth) / 2, -(height * scaleHeight) / 2); // Translate back
         g2.drawImage(sprite, 0, 0, (int) (width * scaleWidth), (int) (height * scaleHeight), null);
 
-        // Restore original transform
+        // restore original transform
         g2.setTransform(originalTransform);
 
-        // Draw debugging hitbox
         if (Frame.debugging) {
 			g.setColor(Color.red);
 			
-			// Get rotated hitbox
+			//get rotated hitbox
 			Rectangle boundingBox = hitbox();
 			
 			int[] xPoints = {
@@ -94,16 +93,27 @@ public class Monkey extends Sprite{
 		}
 	}
 
+	public float getRotationAngle(){
+		return rotationAngle;
+	}
+
+	public int getCenterX(){
+		return x + width / 2;
+	}
+
+	public int getCenterY(){
+		return y + height / 2;
+	}
+
 	@Override
 	public Rectangle hitbox() {
-		// Calculate the center of the monkey sprite
+		//centers
 		int centerX = x + (int)(width * scaleWidth / 2);
 		int centerY = y + (int)(height * scaleHeight / 2);
 		
-		// Calculate rotated corners
 		double angle = Math.toRadians(rotationAngle);
 		
-		// Original corner points relative to center
+		//original corner points
 		double[][] originalPoints = {
 			{-width * scaleWidth / 2, -height * scaleHeight / 2},  // Top Left
 			{width * scaleWidth / 2, -height * scaleHeight / 2},   // Top Right
@@ -115,21 +125,21 @@ public class Monkey extends Sprite{
 			originalPoints[i][1] *= 0.9;
 		}	
 
-		// Rotated points
+		//new rotated points
 		int[] xPoints = new int[4];
 		int[] yPoints = new int[4];
 		
 		for (int i = 0; i < 4; i++) {
-			// Rotate point
+			//rotate points
 			double rotatedX = originalPoints[i][0] * Math.cos(angle) - originalPoints[i][1] * Math.sin(angle);
 			double rotatedY = originalPoints[i][0] * Math.sin(angle) + originalPoints[i][1] * Math.cos(angle);
 			
-			// Translate back to screen coordinates
+			//translate back to coordinates
 			xPoints[i] = centerX + (int)rotatedX;
 			yPoints[i] = centerY + (int)rotatedY;
 		}
 		
-		// Find bounding rectangle of the rotated polygon
+		//create bounding rectangle of the rotated polygon
 		int minX = Arrays.stream(xPoints).min().getAsInt();
 		int maxX = Arrays.stream(xPoints).max().getAsInt();
 		int minY = Arrays.stream(yPoints).min().getAsInt();

@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -53,12 +55,21 @@ public class Frame extends JPanel implements ActionListener, MouseListener, KeyL
 
 	int lifeCounter = 5;
 	ArrayList<Lives> lives = new ArrayList<>();
+	ArrayList<Projectile> darts = new ArrayList<>();
 	int bloonSpeed = 2;
 	boolean dead = false;
 	boolean gameOver = false;
 	boolean win = false;
+	boolean playSfx = false;
 	int riding = 0;
-	
+
+	SimpleAudioPlayer loseSfx = new SimpleAudioPlayer("loseSfx.wav", false);
+	SimpleAudioPlayer winSfx = new SimpleAudioPlayer("winSfx.wav", false);
+	SimpleAudioPlayer splashSfx = new SimpleAudioPlayer("splash.wav", false);
+	SimpleAudioPlayer bgMusicPlayer = new SimpleAudioPlayer("bgMusic.wav", true);
+
+
+
 	int width = 610;
 	int height = 630;	
 
@@ -66,24 +77,48 @@ public class Frame extends JPanel implements ActionListener, MouseListener, KeyL
 	public void paint(Graphics g) {
 		super.paintComponent(g);
 		if(gameOver){
+			if(!playSfx){
+				playSfx = true;
+				loseSfx.play();
+				bgMusicPlayer.pause();
+			}
 			g.drawImage(background2, 0, 0, null);
+			g.setColor(Color.red);
+			g.drawString("Press R to reset", 250, 600);
 		}
 		else if(win){
+			if(!playSfx){
+				playSfx = true;
+				winSfx.play();
+				bgMusicPlayer.pause();
+			}
 			g.drawImage(background3, 0, 0, null);
+			g.setColor(Color.red);
+			g.drawString("Press R to reset", 250, 600);
 		}
 		else{ 
 			if (background1 != null) {
 				g.drawImage(background1, 0, 0, 610, 630, null);
 			}
 
+			for(Projectile p : darts){
+				p.paint(g);
+			}
+
 			updateBloons(g);
 			updateRideables(g);
-			System.out.println(dart.x + "," + dart.y);
+			//System.out.println(dart.x + "," + dart.y);
 
 			if(riding == 0){
 				//345 - 420, 57 - 128 
-				if(dart.y + dart.height > 55 && dart.y < 120) dead = true;
-				if(dart.y + dart.height > 345 && dart.y < 410) dead = true;
+				if(dart.y + dart.height > 55 && dart.y < 120){ 
+					dead = true;
+					splashSfx.play();
+				}
+				if(dart.y + dart.height > 345 && dart.y < 410){
+					dead = true;
+					splashSfx.play();
+				}
 			}
 
 			if(dead){
@@ -133,15 +168,20 @@ public class Frame extends JPanel implements ActionListener, MouseListener, KeyL
 	
 	public Frame() {
 		try{
-            URL imageURL = getClass().getResource("/imgs/bgstart.png");
-            background1 = ImageIO.read(imageURL);
+			URL imageURL = getClass().getResource("/imgs/bgstart.png");
+			background1 = ImageIO.read(imageURL);
 			imageURL = getClass().getResource("/imgs/bgdefeat.png");
 			background2 = ImageIO.read(imageURL);
 			imageURL = getClass().getResource("/imgs/bgvictory.png");
 			background3= ImageIO.read(imageURL);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		bgMusicPlayer.play();
+
+
+
 
 		for(int i = 1; i <= lifeCounter; i++) lives.add(new Lives(i)); //create life counter
 
@@ -153,7 +193,7 @@ public class Frame extends JPanel implements ActionListener, MouseListener, KeyL
 		f.setBackground(Color.white);
 		f.add(this);
 		f.setResizable(false);
- 		f.addMouseListener(this);
+		f.addMouseListener(this);
 		f.addKeyListener(this);
 			
 		setCursor(Toolkit.getDefaultToolkit().createCustomCursor(
@@ -185,8 +225,10 @@ public class Frame extends JPanel implements ActionListener, MouseListener, KeyL
 	
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
+		float angle = dart.getRotationAngle();
+		int startX = dart.getCenterX();		
+		int startY = dart.getCenterY();
+		darts.add(new Projectile(startX, startY, angle));
 	}
 
 	@Override
@@ -317,10 +359,12 @@ public class Frame extends JPanel implements ActionListener, MouseListener, KeyL
 		rideables[3] = rideables4;
 	}
 
-	public void reset(){
+	public void reset() {
 		gameOver = false;
 		dead = false;
 		win = false;
+		playSfx = false;
+		bgMusicPlayer.play();
 		riding = 0;
 		lifeCounter = 5;
 		dart.move(275, 570);
